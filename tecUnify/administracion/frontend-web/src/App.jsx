@@ -1,13 +1,36 @@
-import React from 'react'
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import { isAuthenticated } from './services/authService';
+
+// Componente para proteger rutas
+function PrivateRoute({ children }) {
+  return isAuthenticated() ? children : <Navigate to="/login" />;
+}
 
 function App() {
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial' }}>
-      <h1>í¾¯ tecUnify - Panel de AdministraciÃ³n</h1>
-      <p>Frontend React conectado con Django</p>
-      <p>Estado: âœ… Funcionando</p>
-    </div>
-  )
+    <BrowserRouter>
+      <Routes>
+        {/* Rutas pÃºblicas */}
+        <Route path="/login" element={<Login />} />
+
+        {/* Rutas privadas */}
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+
+        {/* RedirecciÃ³n por defecto */}
+        <Route path="/" element={<Navigate to="/login" />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
