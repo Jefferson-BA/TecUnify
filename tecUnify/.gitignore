@@ -1,0 +1,58 @@
+# Python
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.coverage
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dist/
+build/
+.env.local
+.env.production.local
+
+# Java
+target/
+*.class
+*.jar
+*.war
+.mvn/
+mvnw
+mvnw.cmd
+
+# Android
+*.apk
+*.ap_
+*.dex
+.gradle/
+local.properties
+*.iml
+.idea/
+captures/
+
+# Database
+*.sql~
+*.db
+
+# Docker
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+*.swp
+*.swo
+*~

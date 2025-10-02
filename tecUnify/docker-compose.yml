@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: tecunify-db
+    environment:
+      POSTGRES_DB: tecunify
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - tecunify-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  django-backend:
+    build: ./administracion/backend-django
+    container_name: tecunify-django
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./administracion/backend-django:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://admin:admin123@postgres:5432/tecunify
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - tecunify-network
+
+  react-admin:
+    build: ./administracion/frontend-web
+    container_name: tecunify-react-admin
+    volumes:
+      - ./administracion/frontend-web:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:8000/api
+    networks:
+      - tecunify-network
+
+  springboot-backend:
+    build: ./usuario/backend-springboot
+    container_name: tecunify-springboot
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/tecunify
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin123
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - tecunify-network
+
+  react-usuario:
+    build: ./usuario/frontend-web
+    container_name: tecunify-react-usuario
+    volumes:
+      - ./usuario/frontend-web:/app
+      - /app/node_modules
+    ports:
+      - "3001:3000"
+    environment:
+      - VITE_API_URL=http://localhost:8080/api
+    networks:
+      - tecunify-network
+
+volumes:
+  postgres_data:
+
+networks:
+  tecunify-network:
+    driver: bridge
