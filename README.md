@@ -1,4 +1,479 @@
-# 🎓 tecUnify - Plataforma Universitaria de Gestión
+# 🚀 Guía de Instalación Local - tecUnify
+
+Esta guía te ayudará a configurar y ejecutar el proyecto **tecUnify** en tu computadora local.
+
+---
+
+## 📋 Requisitos Previos
+
+Antes de comenzar, asegúrate de tener instalado lo siguiente en tu computadora:
+
+### ✅ Requisitos Obligatorios
+
+#### 1. **Git** (Control de versiones)
+- **Descargar**: [https://git-scm.com/downloads](https://git-scm.com/downloads)
+- **Verificar instalación**:
+  ```bash
+  git --version
+  ```
+  Deberías ver algo como: `git version 2.x.x`
+
+#### 2. **Docker Desktop** (Para contenedores)
+- **Windows/Mac**: [https://www.docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop)
+- **Linux**: [https://docs.docker.com/engine/install/](https://docs.docker.com/engine/install/)
+- **Verificar instalación**:
+  ```bash
+  docker --version
+  docker-compose --version
+  ```
+  Deberías ver las versiones instaladas.
+
+> ⚠️ **Importante**: Asegúrate de que Docker Desktop esté **ejecutándose** antes de continuar.
+
+---
+
+## 🎯 Opción 1: Instalación Rápida con Docker (Recomendado)
+
+Esta es la forma más rápida y sencilla. Docker se encarga de todo automáticamente.
+
+### Paso 1: Clonar el Repositorio
+
+```bash
+# Clona el repositorio
+git clone https://github.com/tu-usuario/tecunify.git
+
+# Entra al directorio
+cd tecunify
+```
+
+### Paso 2: Levantar los Servicios
+
+```bash
+# Construir y levantar todos los contenedores
+docker-compose up -d
+```
+
+**Esto descargará e instalará automáticamente:**
+- ✅ PostgreSQL 15
+- ✅ Django + Python 3.11
+- ✅ Spring Boot + Java 17
+- ✅ React + Node.js 18
+- ✅ Todas las dependencias necesarias
+
+### Paso 3: Esperar a que Todo se Inicie
+
+```bash
+# Ver el progreso (espera 2-3 minutos)
+docker-compose logs -f
+```
+
+Presiona `Ctrl+C` para salir de los logs cuando veas mensajes como:
+- `django-backend | Starting development server at http://0.0.0.0:8000/`
+- `springboot-backend | Started UsuarioApplication`
+
+### Paso 4: Verificar que Todo Funcione
+
+```bash
+# Ver el estado de los contenedores
+docker-compose ps
+```
+
+Todos deberían mostrar estado `Up`.
+
+### Paso 5: Acceder a la Aplicación
+
+Abre tu navegador en:
+- **Admin Frontend**: http://localhost:3000
+- **Usuario Frontend**: http://localhost:3001
+- **Admin API**: http://localhost:8000/api/usuarios/
+- **Usuario API**: http://localhost:8080/api/usuarios
+
+---
+
+## 💻 Opción 2: Instalación Local (Sin Docker)
+
+Si prefieres ejecutar todo localmente sin Docker, necesitarás instalar cada herramienta manualmente.
+
+### Requisitos Adicionales
+
+#### 1. **Node.js** (Para React)
+- **Versión**: 18 o superior
+- **Descargar**: [https://nodejs.org/](https://nodejs.org/)
+- **Verificar**:
+  ```bash
+  node --version
+  npm --version
+  ```
+
+#### 2. **Python** (Para Django)
+- **Versión**: 3.11 o superior
+- **Descargar**: [https://www.python.org/downloads/](https://www.python.org/downloads/)
+- **Verificar**:
+  ```bash
+  python --version  # o python3 --version
+  pip --version     # o pip3 --version
+  ```
+
+#### 3. **Java JDK** (Para Spring Boot)
+- **Versión**: 17 o superior
+- **Descargar**: [https://adoptium.net/](https://adoptium.net/)
+- **Verificar**:
+  ```bash
+  java --version
+  javac --version
+  ```
+
+#### 4. **Maven** (Para Spring Boot)
+- **Versión**: 3.8 o superior
+- **Descargar**: [https://maven.apache.org/download.cgi](https://maven.apache.org/download.cgi)
+- **Verificar**:
+  ```bash
+  mvn --version
+  ```
+
+#### 5. **PostgreSQL** (Base de datos)
+- **Versión**: 15 o superior
+- **Descargar**: [https://www.postgresql.org/download/](https://www.postgresql.org/download/)
+- **Verificar**:
+  ```bash
+  psql --version
+  ```
+
+---
+
+### Configuración Paso a Paso (Sin Docker)
+
+#### 🗄️ Paso 1: Configurar PostgreSQL
+
+```bash
+# Inicia PostgreSQL y conéctate
+psql -U postgres
+
+# Crea la base de datos y el usuario
+CREATE DATABASE tecunify;
+CREATE USER admin WITH PASSWORD 'admin123';
+GRANT ALL PRIVILEGES ON DATABASE tecunify TO admin;
+\q
+```
+
+```bash
+# Ejecuta el script de inicialización
+psql -U admin -d tecunify -f database/init.sql
+```
+
+---
+
+#### 🐍 Paso 2: Configurar Backend Django (Administración)
+
+```bash
+# Ve al directorio
+cd administracion/backend-django
+
+# Crea un entorno virtual
+python -m venv venv
+
+# Activa el entorno virtual
+# En Windows:
+venv\Scripts\activate
+# En Mac/Linux:
+source venv/bin/activate
+
+# Instala las dependencias
+pip install -r requirements.txt
+
+# Configura las variables de entorno
+# Edita el archivo .env y ajusta la conexión a PostgreSQL si es necesario
+
+# Ejecuta las migraciones
+python manage.py migrate
+
+# Crea un superusuario (opcional)
+python manage.py createsuperuser
+
+# Inicia el servidor
+python manage.py runserver
+```
+
+✅ **Django corriendo en**: http://localhost:8000
+
+---
+
+#### ⚛️ Paso 3: Configurar Frontend React (Administración)
+
+**Abre una nueva terminal** (deja Django corriendo)
+
+```bash
+# Ve al directorio
+cd administracion/frontend-web
+
+# Instala las dependencias
+npm install
+
+# Inicia el servidor de desarrollo
+npm run dev
+```
+
+✅ **React Admin corriendo en**: http://localhost:3000
+
+---
+
+#### ☕ Paso 4: Configurar Backend Spring Boot (Usuario)
+
+**Abre una nueva terminal**
+
+```bash
+# Ve al directorio
+cd usuario/backend-springboot
+
+# Compila el proyecto
+./mvnw clean install
+
+# En Windows usa:
+# mvnw.cmd clean install
+
+# Inicia la aplicación
+./mvnw spring-boot:run
+
+# En Windows:
+# mvnw.cmd spring-boot:run
+```
+
+✅ **Spring Boot corriendo en**: http://localhost:8080
+
+---
+
+#### ⚛️ Paso 5: Configurar Frontend React (Usuario)
+
+**Abre una nueva terminal**
+
+```bash
+# Ve al directorio
+cd usuario/frontend-web
+
+# Instala las dependencias
+npm install
+
+# Edita el archivo vite.config.js para cambiar el puerto a 3001
+# O ejecuta con un puerto diferente:
+npm run dev -- --port 3001
+```
+
+✅ **React Usuario corriendo en**: http://localhost:3001
+
+---
+
+## ✅ Verificación Final
+
+### Prueba las APIs
+
+```bash
+# API Django (Administración)
+curl http://localhost:8000/api/usuarios/
+
+# API Spring Boot (Usuario)
+curl http://localhost:8080/api/usuarios
+```
+
+### Accede a los Frontends
+
+Abre tu navegador:
+- Admin: http://localhost:3000
+- Usuario: http://localhost:3001
+
+---
+
+## 🆘 Solución de Problemas Comunes
+
+### ❌ Error: "Puerto ya en uso"
+
+**Problema**: `Error: listen EADDRINUSE: address already in use :::3000`
+
+**Solución**:
+```bash
+# En Windows:
+netstat -ano | findstr :3000
+taskkill /PID <numero_pid> /F
+
+# En Mac/Linux:
+lsof -ti:3000 | xargs kill -9
+```
+
+---
+
+### ❌ Error: "Cannot connect to database"
+
+**Problema**: No se puede conectar a PostgreSQL
+
+**Soluciones**:
+1. Verifica que PostgreSQL esté corriendo:
+   ```bash
+   # Windows: abre "Servicios" y busca PostgreSQL
+   # Mac/Linux:
+   sudo service postgresql status
+   ```
+
+2. Verifica las credenciales en los archivos `.env`
+
+3. Asegúrate de que el puerto 5432 esté disponible
+
+---
+
+### ❌ Error: "Docker daemon not running"
+
+**Problema**: `Cannot connect to the Docker daemon`
+
+**Solución**:
+- Abre **Docker Desktop** y espera a que inicie completamente
+- Verifica que esté corriendo: `docker ps`
+
+---
+
+### ❌ Error: "Module not found" en Node.js
+
+**Problema**: `Error: Cannot find module 'react'`
+
+**Solución**:
+```bash
+# Elimina node_modules y reinstala
+rm -rf node_modules package-lock.json
+npm install
+```
+
+---
+
+### ❌ Error: "Python venv not activating"
+
+**Problema**: El entorno virtual no se activa correctamente
+
+**Solución en Windows**:
+```bash
+# Habilita la ejecución de scripts
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# Luego activa nuevamente
+venv\Scripts\activate
+```
+
+---
+
+### ❌ Error: "Java version incompatible"
+
+**Problema**: Spring Boot requiere Java 17+
+
+**Solución**:
+```bash
+# Verifica tu versión
+java --version
+
+# Descarga Java 17 desde:
+# https://adoptium.net/temurin/releases/?version=17
+```
+
+---
+
+## 🛑 Detener Todo
+
+### Con Docker:
+```bash
+# Detener todos los contenedores
+docker-compose down
+
+# Detener y eliminar volúmenes (limpieza completa)
+docker-compose down -v
+```
+
+### Sin Docker:
+Presiona `Ctrl+C` en cada terminal donde estén corriendo los servicios.
+
+---
+
+## 🔄 Reiniciar Todo
+
+### Con Docker:
+```bash
+# Reconstruir y levantar
+docker-compose up -d --build
+```
+
+### Sin Docker:
+Repite los pasos de ejecución para cada servicio que necesites.
+
+---
+
+## 📱 Desarrollo con Android (Opcional)
+
+### Requisitos para la App Móvil:
+
+1. **Android Studio**
+   - Descargar: [https://developer.android.com/studio](https://developer.android.com/studio)
+
+2. **Abrir el proyecto**:
+   ```bash
+   # Abre Android Studio y selecciona:
+   # File > Open > tecunify/usuario/frontend-movil
+   ```
+
+3. **Ejecutar en emulador**:
+   - Crea un dispositivo virtual (AVD)
+   - Click en el botón "Run" (▶️)
+
+---
+
+## 💡 Consejos Adicionales
+
+### Para Desarrollo Eficiente:
+
+1. **Usa Docker** si quieres simplicidad
+2. **Instalación local** si necesitas debuggear o modificar código
+3. **Mantén Docker Desktop corriendo** si usas Docker
+4. **Abre múltiples terminales** si instalas localmente
+5. **Usa Visual Studio Code** como editor (recomendado)
+
+### Extensiones Recomendadas para VS Code:
+
+- Python
+- Django
+- ESLint
+- Prettier
+- Docker
+- Spring Boot Extension Pack
+
+---
+
+## ✅ Checklist de Instalación
+
+Marca lo que hayas completado:
+
+- [ ] Git instalado
+- [ ] Docker Desktop instalado (si usas Docker)
+- [ ] Repositorio clonado
+- [ ] Servicios levantados
+- [ ] Frontend Admin funcionando (http://localhost:3000)
+- [ ] Frontend Usuario funcionando (http://localhost:3001)
+- [ ] API Django respondiendo (http://localhost:8000/api)
+- [ ] API Spring Boot respondiendo (http://localhost:8080/api)
+- [ ] Base de datos conectada
+
+---
+
+## 🎓 ¿Necesitas Ayuda?
+
+Si tienes problemas:
+
+1. 📖 Revisa la sección de **Solución de Problemas**
+2. 🔍 Busca el error en Google/Stack Overflow
+3. 💬 Abre un **Issue** en GitHub: [Crear Issue](https://github.com/tu-usuario/tecunify/issues)
+4. 📧 Contacta al equipo: tu.email@ejemplo.com
+
+---
+
+<div align="center">
+
+**¡Feliz codificación! 🚀**
+
+Si esta guía te ayudó, dale ⭐ al repositorio
+
+</div>
 
 <div align="center">
 
